@@ -8,7 +8,8 @@ public class App {
 
     static class Parcel {
         private String pin;
-        private String houseNum;
+        private int houseNum;
+        private String houseLetter;
         private String street;
         private String name;
         private Double marketValue;
@@ -16,9 +17,10 @@ public class App {
         private Double salePrice;
         private String link;
 
-        public Parcel(String pin, String houseNum, String street, String name, Double marketValue, String saleDate, Double salePrice, String link) {
+        public Parcel(String pin, int houseNum, String houseLetter, String street, String name, Double marketValue, String saleDate, Double salePrice, String link) {
             this.pin = pin;
             this.houseNum = houseNum;
+            this.houseLetter = houseLetter;
             this.street = street;
             this.name = name;
             this.marketValue = marketValue;
@@ -37,14 +39,21 @@ public class App {
             this.street = newStreet;
         }
 
-        public String getHouseNum() {
+        public int getHouseNum() {
             return houseNum;
         }
 
-        public void setHouseNum(String newHouseNum) {
-            this.street = newHouseNum;
+        public void setHouseNum(int newHouseNum) {
+            this.houseNum = newHouseNum;
         }
 
+        public String getHouseLetter() {
+            return houseLetter;
+        }
+
+        public void setHouseLetter(String newHouseLetter) {
+            this.houseLetter = newHouseLetter;
+        }
     }
 
 
@@ -79,18 +88,21 @@ public class App {
 
             //Further divides the address into house number and street name
             String[] addressFragment = address.split(" ");
-            String houseNum = "";
+            int houseNum;
+            String houseLetter = "";
             String street = "";
 
-            //Checks if there is a letter included in the house number, if there is, includes it with house number
+
+            houseNum = Integer.parseInt(addressFragment[0]);
+
+            //Checks if there is a house letter included in the address, sets it if there is one and joins the street name together
             if (addressFragment[1].length() == 1) {
-                houseNum = addressFragment[0] + " " + addressFragment[1];
+                houseLetter = addressFragment[1];
                 for (int i = 2; i < addressFragment.length; i++){
                     street = String.join(" ", street, addressFragment[i]);
                 }
             }
             else {
-                houseNum = addressFragment[0];
                 for (int i = 1; i < addressFragment.length; i++){
                     street = String.join(" ", street, addressFragment[i]);
                 }
@@ -98,7 +110,7 @@ public class App {
 
 
             //Adds a complete line to the ArrayList using parcelFragments turned temp variables
-            parcelList.add(new Parcel(pin, houseNum, street, name, marketValue, saleDate, salePrice, link));
+            parcelList.add(new Parcel(pin, houseNum, houseLetter, street, name, marketValue, saleDate, salePrice, link));
             
             //System.out.println(parcelFragment[1]);
 
@@ -107,11 +119,11 @@ public class App {
         }
 
 
-        parcelList.sort(Comparator.comparing(Parcel::getStreet).thenComparing(Parcel::getHouseNum));
+        parcelList.sort(Comparator.comparing(Parcel::getStreet).thenComparing(Parcel::getHouseNum).thenComparing(Parcel::getHouseLetter));
         
         //Prints out the reordered parcelList
         for (Parcel parcel : parcelList) {
-            System.out.println(parcel.pin + " | " + parcel.houseNum + " " + parcel.street + " | " + parcel.name);
+            System.out.println(parcel.pin + " | " + parcel.houseNum + parcel.houseLetter + parcel.street + " | " + parcel.name);
         }
 
         reader.close();
