@@ -7,26 +7,21 @@ import java.util.Comparator;
 public class App {
 
     static class Parcel {
-        private String pin;
+        private String fullListing;
         private int houseNum;
         private String houseLetter;
         private String street;
-        private String name;
-        private Double marketValue;
-        private String saleDate;
-        private Double salePrice;
-        private String link;
+        private String firstName;
+        private String lastName;
 
-        public Parcel(String pin, int houseNum, String houseLetter, String street, String name, Double marketValue, String saleDate, Double salePrice, String link) {
-            this.pin = pin;
+
+        public Parcel(String fullListing, int houseNum, String houseLetter, String street, String firstName, String lastName) {
+            this.fullListing = fullListing;
             this.houseNum = houseNum;
             this.houseLetter = houseLetter;
             this.street = street;
-            this.name = name;
-            this.marketValue = marketValue;
-            this.saleDate = saleDate;
-            this.salePrice = salePrice;
-            this.link = link;
+            this.firstName = firstName;
+            this.lastName = lastName;
         }
 
 
@@ -54,6 +49,22 @@ public class App {
         public void setHouseLetter(String newHouseLetter) {
             this.houseLetter = newHouseLetter;
         }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String newFirstName) {
+            this.firstName = newFirstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String newLastName) {
+            this.lastName = newLastName;
+        }
     }
 
 
@@ -68,32 +79,27 @@ public class App {
         //Reads a single line at a time
         String currentLine = reader.readLine();
 
+        String columnKey = currentLine;
         //Advances one line to skip past the 1st line key in provided text file
         currentLine = reader.readLine();
 
         //Loops through the line length of the provided text document
         while (currentLine != null) {
+            //Stores the complete line of text from the provided document for reprinting after it has been sorted
+            String fullListing = currentLine;
 
             //Splits the currentLine at each "|" and adds each piece of data into an array
             String[] parcelFragment = currentLine.split("\\|");
 
-            //Sets each of the fragment fields to a temporary variable
-            String pin = parcelFragment[0];
+            //Sets the address and name for further splitting
             String address = parcelFragment[1];
             String name = parcelFragment[2];
-            Double marketValue = Double.parseDouble(parcelFragment[3]);
-            String saleDate = parcelFragment[4];
-            Double salePrice = Double.parseDouble(parcelFragment[5]);
-            String link = parcelFragment[6];
 
             //Further divides the address into house number and street name
             String[] addressFragment = address.split(" ");
-            int houseNum;
+            int houseNum = Integer.parseInt(addressFragment[0]);
             String houseLetter = "";
             String street = "";
-
-
-            houseNum = Integer.parseInt(addressFragment[0]);
 
             //Checks if there is a house letter included in the address, sets it if there is one and joins the street name together
             if (addressFragment[1].length() == 1) {
@@ -109,25 +115,42 @@ public class App {
             }
 
 
+            //Further divides the name into first and last. Business names will just have a 'first' name
+            String[] nameFragment = name.split(",");
+            String lastName = "";
+            String firstName = "";
+
+            if (nameFragment.length > 1) {
+                firstName = nameFragment[1].trim();
+                lastName = nameFragment[0];
+            }
+            else {
+                firstName = nameFragment[0];
+            }
+
+
             //Adds a complete line to the ArrayList using parcelFragments turned temp variables
-            parcelList.add(new Parcel(pin, houseNum, houseLetter, street, name, marketValue, saleDate, salePrice, link));
-            
-            //System.out.println(parcelFragment[1]);
+            parcelList.add(new Parcel(fullListing, houseNum, houseLetter, street, firstName, lastName));
 
             //Advances the reader to the next line
             currentLine = reader.readLine();
         }
 
-
+        //Sorts by street, then house number, then house letter
         parcelList.sort(Comparator.comparing(Parcel::getStreet).thenComparing(Parcel::getHouseNum).thenComparing(Parcel::getHouseLetter));
+
+        //Sorts by first name and then last name. Businesses will only have a 'first' name
+        //parcelList.sort(Comparator.comparing(Parcel::getFirstName).thenComparing(Parcel::getLastName));
         
+        //prints the key from the provided text file
+        System.out.println(columnKey);
+
         //Prints out the reordered parcelList
         for (Parcel parcel : parcelList) {
-            System.out.println(parcel.pin + " | " + parcel.houseNum + parcel.houseLetter + parcel.street + " | " + parcel.name);
+            System.out.println(parcel.fullListing + " | " + "https://www.google.com/maps/place/" + parcel.houseNum + parcel.houseLetter.replaceAll("\\W", "+") + parcel.street.replaceAll("\\W", "+") + "+Mazama+WA");
         }
 
         reader.close();
     }
 }
 
-//"https://www.google.com/maps/place/" + parcel.road + "Mazama+WA"
