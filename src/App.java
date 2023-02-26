@@ -118,10 +118,13 @@ public class App {
             //Further divides the name into first and last. Business names will just have a 'first' name
             String[] nameFragment = name.split(",");
             String lastName = "";
+            String[] firstNames;
             String firstName = "";
 
+            //Checks if it is a person or business, based on precsence of a comma. Sets first name to either just the first person listed or the whole business name
             if (nameFragment.length > 1) {
-                firstName = nameFragment[1].trim();
+                firstNames = nameFragment[1].trim().split(" ");
+                firstName = firstNames[0];
                 lastName = nameFragment[0];
             }
             else {
@@ -137,10 +140,10 @@ public class App {
         }
 
         //Sorts by street, then house number, then house letter
-        parcelList.sort(Comparator.comparing(Parcel::getStreet).thenComparing(Parcel::getHouseNum).thenComparing(Parcel::getHouseLetter));
+        //parcelList.sort(Comparator.comparing(Parcel::getStreet).thenComparing(Parcel::getHouseNum).thenComparing(Parcel::getHouseLetter));
 
         //Sorts by first name and then last name. Businesses will only have a 'first' name
-        //parcelList.sort(Comparator.comparing(Parcel::getFirstName).thenComparing(Parcel::getLastName));
+        parcelList.sort(Comparator.comparing(Parcel::getFirstName).thenComparing(Parcel::getLastName));
         
         //prints the key from the provided text file
         System.out.println(columnKey);
